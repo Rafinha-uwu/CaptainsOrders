@@ -8963,6 +8963,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95f034b5cef20b64bb9b9bd83858ea13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game
+  On: 0
+  P1: {fileID: 0}
+  P2: {fileID: 0}
+  P3: {fileID: 0}
 --- !u!4 &870169778
 Transform:
   m_ObjectHideFlags: 0
@@ -17902,7 +17906,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2218496723442559054, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_Name
-      value: XR Origin Hands (XR Rig)
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 2425469361241291328, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_IsActive

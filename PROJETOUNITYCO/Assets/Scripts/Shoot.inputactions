@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "Shoot",
+    "maps": [
+        {
+            "name": "Mine",
+            "id": "853bd4f7-6956-4750-a40e-79fd56c64830",
+            "actions": [
+                {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "b41edbf6-abbe-4769-8e2d-d066b0b95361",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ea73b911-b49d-4a37-b0de-803ebe6888e4",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
