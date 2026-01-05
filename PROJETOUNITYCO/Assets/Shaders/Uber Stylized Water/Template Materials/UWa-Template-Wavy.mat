@@ -212,7 +212,7 @@ Material:
     - _CausticsStart: 3
     - _CausticsStartDistance: 5
     - _CausticsStrength: 0.7
-    - _Caustics_Depth: -4
+    - _Caustics_Depth: -2.17
     - _Caustics_Distortion_Scale: 3.6
     - _Caustics_Distortion_Strength: 5.28
     - _Caustics_Fade: 7.8
@@ -225,8 +225,8 @@ Material:
     - _Depth_Distance: 1.26
     - _DistanceMaskFade: 10
     - _DistanceMaskStart: 15
-    - _DistanceMask_Fade: 10
-    - _DistanceMask_Start: 5
+    - _DistanceMask_Fade: 10.02
+    - _DistanceMask_Start: 5.5
     - _DistanceNormalStrength: 0.01
     - _DistanceNormalTile: 5.54
     - _DistortionScale: 2
@@ -264,7 +264,7 @@ Material:
     - _FresnelStrength: 0
     - _Fresnel_Opacity: 1
     - _Fresnel_Power: 10
-    - _InterSec_Dissolve: 1.6
+    - _InterSec_Dissolve: 4.54
     - _InterSec_Edge_Dissolve: 0.385
     - _InterSec_Edge_Fade: 1
     - _InterSec_Foam_Distortion: 3
@@ -313,7 +313,7 @@ Material:
     - _RefrectionPan: 0.1
     - _RefrectionTile: 5.58
     - _SL_Ammount: 1.15
-    - _SL_CenterMask: 0.5
+    - _SL_CenterMask: 0.671
     - _SL_CenterMaskFade: 0
     - _SL_Depth: 0.3
     - _SL_Dissolve: 0.7
@@ -330,7 +330,7 @@ Material:
     - _ShoreFadeHardness: 0.641
     - _ShoreFadeSmoothness: 0.2
     - _ShoreFade_1: 0
-    - _ShoreFade_Smoothness: 0.206
+    - _ShoreFade_Smoothness: 0.405
     - _ShoreLineAmmount: 4.54
     - _ShoreLineCenterMask: 2.01
     - _ShoreLineCutoff: 0.66
@@ -353,9 +353,9 @@ Material:
     - _Specular_Spread: 0
     - _Specular_Strength: 50
     - _SrcBlend: 5
-    - _SurfFoam_AlphaBlend: 0
-    - _SurfFoam_Edge: 0.053
-    - _SurfFoam_EdgeSmooth: 0.109
+    - _SurfFoam_AlphaBlend: 0.152
+    - _SurfFoam_Edge: 0.091
+    - _SurfFoam_EdgeSmooth: 0.634
     - _SurfFoam_Scale: 2
     - _Surface: 1
     - _SurfaceDistortionScale: 0.1
@@ -379,7 +379,7 @@ Material:
     - _Underwater_Fade: 15
     - _WORLDSPACEDEPTH: 1
     - _WaterDepth: 0.42
-    - _Water_Depth: 0.3
+    - _Water_Depth: 2.25
     - _WaveHeight: 0.02
     - _WaveHeight2nd: 0.05
     - _WaveLength: 5

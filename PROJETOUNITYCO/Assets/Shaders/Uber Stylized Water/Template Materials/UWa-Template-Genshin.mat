@@ -227,7 +227,7 @@ Material:
     - _Depth_Distance: 1.26
     - _DistanceMaskFade: 10
     - _DistanceMaskStart: 15
-    - _DistanceMask_Fade: 10
+    - _DistanceMask_Fade: 9.12
     - _DistanceMask_Start: 5
     - _DistanceNormalStrength: 0.01
     - _DistanceNormalTile: 5.54
@@ -332,7 +332,7 @@ Material:
     - _ShoreFadeHardness: 0.529
     - _ShoreFadeSmoothness: 0.2
     - _ShoreFade_1: 0
-    - _ShoreFade_Smoothness: 0.167
+    - _ShoreFade_Smoothness: 0.247
     - _ShoreLineAmmount: 3.47
     - _ShoreLineCenterMask: 2.01
     - _ShoreLineCutoff: 0.66
@@ -380,7 +380,7 @@ Material:
     - _Underwater_Fade: 15
     - _WORLDSPACEDEPTH: 1
     - _WaterDepth: 0.4
-    - _Water_Depth: 0.3
+    - _Water_Depth: 1.31
     - _WaveHeight: 0.01
     - _WaveHeight2nd: 0.01
     - _WaveLength: 10
