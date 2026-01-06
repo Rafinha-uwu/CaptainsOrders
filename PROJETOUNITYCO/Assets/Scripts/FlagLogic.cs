@@ -1,229 +1,151 @@
 using UnityEngine;
-using System.Text;
-using TMPro;
 
-public class FlagLogic : MonoBehaviour
+public class FlagLogicV3 : MonoBehaviour
 {
     // ===== ENUMS =====
 
-    public enum OtherColor { Black, Yellow, Purple }
-    public enum OtherCharge { Cross, X, Smile, S, Snake }
-
-    public enum OurColor { LightBlue, Blue, Green, Red }
-
-    // FIXED: no normal Square
-    public enum OurShape
+    public enum FlagColor
     {
-        BigSquare,          // 0
-        SmallSquare,        // 1
-        VerticalRectangle,  // 2
-        HorizontalRectangle // 3
+        White,        // 0
+        BlueRed,      // 1
+        Violet,       // 2
+        PurpleBlack   // 3
     }
 
-    public enum OurCharge
+    public enum FlagCharge
     {
-        HorizontalRectangle, // 0
-        VerticalRectangle,   // 1
-        Cross,               // 2
-        ThreeSquares         // 3
+        Crest,           // 0
+        HorizontalLines, // 1
+        FilledCross,     // 2
+        HollowCross      // 3
     }
 
-    // ===== TMP OUTPUT =====
+    public enum FlagShape
+    {
+        Square,       // 0
+        Rectangle,    // 1
+        Triangle,     // 2
+        BigRectangle  // 3
+    }
 
-    [Header("UI")]
-    public TMP_Text otherShipText;
+    // =========================================================
+    // OTHER SHIP VISUAL REFERENCES
+    // =========================================================
 
-    // ===== OTHER SHIP =====
+    [Header("Other Ship - Colors (paired, match enum order)")]
+    public GameObject[] otherColorObjects;   // size 4
 
-    private OtherColor otherColor;
-    private OtherCharge[] otherCharges;
+    [Header("Other Ship - Charges (match enum order)")]
+    public GameObject[] otherChargeObjects;  // size 4
+
+    [Header("Other Ship - Flag Count (1,2,3)")]
+    public GameObject[] otherFlagCountObjects; // size 3
+
+    // =========================================================
+    // OTHER SHIP DATA
+    // =========================================================
+
+    private FlagColor otherColor;
+    private FlagCharge otherCharge;
     private int otherCount;
 
-    // ===== OUR FLAG (PLAYER INPUT) =====
+    // =========================================================
+    // OUR FLAG (PLAYER INPUT)
+    // =========================================================
 
-    private OurColor ourColor;
-    private OurShape ourShape;
-    private OurCharge ourCharge;
+    private FlagColor ourColor;
+    private FlagCharge ourCharge;
+    private FlagShape ourShape;
 
-    // ===== EXPECTED RESULT =====
+    // =========================================================
+    // EXPECTED RESULT (RULE OUTPUT)
+    // =========================================================
 
-    private OurColor expectedColor;
-    private OurShape expectedShape;
-    private OurCharge expectedCharge;
+    private FlagColor expectedColor;
+    private FlagCharge expectedCharge;
+    private FlagShape expectedShape;
 
     void Start()
     {
         RandomizeOtherShip();
-        ComputeExpectedFlag();
+        ComputeExpectedFlag(); // rules later
     }
 
-    // ===== RANDOMIZATION =====
+    // =========================================================
+    // RANDOMIZATION + VISUALS
+    // =========================================================
 
     public void RandomizeOtherShip()
     {
-        otherColor = (OtherColor)Random.Range(0, 3);
+        otherColor = (FlagColor)Random.Range(0, 4);
+        otherCharge = (FlagCharge)Random.Range(0, 4);
         otherCount = Random.Range(1, 4);
 
-        otherCharges = new OtherCharge[otherCount];
-        for (int i = 0; i < otherCount; i++)
-        {
-            otherCharges[i] = (OtherCharge)Random.Range(0, 5);
-        }
-
-        WriteOtherShipText();
+        ApplyOtherShipVisuals();
     }
 
-    void WriteOtherShipText()
+    void ApplyOtherShipVisuals()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"Color: {otherColor}");
-        sb.AppendLine($"Number: {otherCount}");
-        sb.Append("Charges: ");
+        // Colors (paired)
+        for (int i = 0; i < otherColorObjects.Length; i++)
+            otherColorObjects[i].SetActive(i == (int)otherColor);
 
-        for (int i = 0; i < otherCharges.Length; i++)
-        {
-            sb.Append(otherCharges[i]);
-            if (i < otherCharges.Length - 1)
-                sb.Append(", ");
-        }
+        // Charges
+        for (int i = 0; i < otherChargeObjects.Length; i++)
+            otherChargeObjects[i].SetActive(i == (int)otherCharge);
 
-        if (otherShipText != null)
-            otherShipText.text = sb.ToString();
-
-        Debug.Log(sb.ToString());
+        // Flag count
+        for (int i = 0; i < otherFlagCountObjects.Length; i++)
+            otherFlagCountObjects[i].SetActive(i < otherCount);
     }
 
-    // ===== RULE ENGINE =====
+    // =========================================================
+    // RULE ENGINE (PLACEHOLDER)
+    // =========================================================
 
     void ComputeExpectedFlag()
     {
-        // Rule 1 — Initial Color
-        if (otherColor == OtherColor.Black)
-            expectedColor = OurColor.Blue;
-        else if (otherColor == OtherColor.Yellow)
-            expectedColor = OurColor.Green;
-        else
-            expectedColor = OurColor.Red;
-
-        // Rule 2 — Charge Interference
-        foreach (var c in otherCharges)
-        {
-            if (c == OtherCharge.Cross || c == OtherCharge.X)
-            {
-                expectedColor = OurColor.LightBlue;
-                break;
-            }
-        }
-
-        // Rule 3 — Quantity Disruption
-        if (otherCount == 3)
-            expectedColor = InvertColor(expectedColor);
-
-        // Rule 4 — Shape by Count
-        if (otherCount == 1)
-            expectedShape = OurShape.BigSquare;
-        else if (otherCount == 2)
-            expectedShape = OurShape.VerticalRectangle;
-        else
-            expectedShape = OurShape.HorizontalRectangle;
-
-        // Rule 5 — Emotional Charges (FIXED)
-        if (HasCharge(OtherCharge.Smile))
-            expectedShape = ReduceShape(expectedShape);
-
-        // Rule 6 — Charge Conversion
-        int sCount = CountCharge(OtherCharge.S);
-        int snakeCount = CountCharge(OtherCharge.Snake);
-
-        if (sCount > snakeCount)
-            expectedCharge = OurCharge.Cross;
-        else if (snakeCount > sCount)
-            expectedCharge = OurCharge.ThreeSquares;
-        else
-            expectedCharge = OurCharge.VerticalRectangle;
+        // TEMP safe defaults
+        expectedColor = FlagColor.White;
+        expectedCharge = FlagCharge.Crest;
+        expectedShape = FlagShape.Square;
     }
 
-    OurColor InvertColor(OurColor c)
-    {
-        return c switch
-        {
-            OurColor.Blue => OurColor.Red,
-            OurColor.Red => OurColor.Blue,
-            OurColor.Green => OurColor.LightBlue,
-            OurColor.LightBlue => OurColor.Green,
-            _ => c
-        };
-    }
-
-    OurShape ReduceShape(OurShape s)
-    {
-        return s switch
-        {
-            OurShape.BigSquare => OurShape.SmallSquare,
-            OurShape.VerticalRectangle => OurShape.SmallSquare,
-            OurShape.HorizontalRectangle => OurShape.SmallSquare,
-            _ => s
-        };
-    }
-
-    bool HasCharge(OtherCharge c)
-    {
-        foreach (var ch in otherCharges)
-            if (ch == c) return true;
-        return false;
-    }
-
-    int CountCharge(OtherCharge c)
-    {
-        int count = 0;
-        foreach (var ch in otherCharges)
-            if (ch == c) count++;
-        return count;
-    }
-
-    // ===== BUTTON INPUT =====
+    // =========================================================
+    // PLAYER INPUT
+    // =========================================================
 
     public void SetOurColor(int index)
     {
-        ourColor = (OurColor)index;
-    }
-
-    public void SetOurShape(int index)
-    {
-        ourShape = (OurShape)index;
+        ourColor = (FlagColor)index;
     }
 
     public void SetOurCharge(int index)
     {
-        ourCharge = (OurCharge)index;
+        ourCharge = (FlagCharge)index;
     }
 
-    // ===== PEACE SIGN CONFIRMATION =====
-
-    public bool ConfirmFlag()
+    public void SetOurShape(int index)
     {
-        bool correct =
-            ourColor == expectedColor &&
-            ourShape == expectedShape &&
-            ourCharge == expectedCharge;
-
-        Debug.Log(correct ? "FLAG CORRECT" : "FLAG INCORRECT");
-        return correct;
+        ourShape = (FlagShape)index;
     }
 
+    // =========================================================
+    // CONFIRMATION
+    // =========================================================
+
+    bool ConfirmFlag_Internal()
+    {
+        return
+            ourColor == expectedColor &&
+            ourCharge == expectedCharge &&
+            ourShape == expectedShape;
+    }
+
+    // UnityEvent-safe wrapper
     public void ConfirmFlag_UnityEvent()
     {
-        bool correct = ConfirmFlag();
-
-        if (correct)
-        {
-            // Solve logic here (or call another script)
-            Debug.Log("MODULE SOLVED");
-        }
-        else
-        {
-            // Strike logic here
-            Debug.Log("STRIKE");
-        }
+        bool correct = ConfirmFlag_Internal();
+        Debug.Log(correct ? "FLAG CORRECT" : "FLAG INCORRECT");
     }
 }

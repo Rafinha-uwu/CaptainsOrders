@@ -11,12 +11,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Basics.unity
     guid: 47b4dc4054743024dbe6bedddb683d06
-  - enabled: 1
+  - enabled: 0
     path: Assets/Samples/XR Hands/1.7.1/Hand Capture/HandCapture.unity
     guid: 1ebe1fe45ff8e46c9ac6fdd6bfd9ec73
   - enabled: 0
     path: Assets/Samples/XR Hands/1.7.1/Gestures/HandGestures.unity
     guid: cd792f2302b8b6f4c9f264e2a4503e15
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: ef1acefe528dd8b4baa2b4a748e65c2b
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 727568acdcacc554ab530a5f48caf023, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
