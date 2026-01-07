@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
 
         currentPuzzleIndex++;
 
-        if (currentPuzzleIndex < puzzles.Length)
+        if (currentPuzzleIndex < puzzles.Length -1)
         {
             puzzles[currentPuzzleIndex].ActivatePuzzle();
         }
