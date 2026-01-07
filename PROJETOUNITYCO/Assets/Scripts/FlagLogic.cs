@@ -185,6 +185,24 @@ public class FlagLogic : MonoBehaviour
     public void ConfirmFlag_UnityEvent()
     {
         bool correct = ConfirmFlag_Internal();
-        Debug.Log(correct ? "FLAG CORRECT" : "FLAG INCORRECT");
+
+        Puzzle puzzle = GetComponent<Puzzle>();
+
+        if (puzzle == null)
+        {
+            Debug.LogError("Puzzle component not found on this GameObject!");
+            return;
+        }
+
+        if (correct)
+        {
+            Debug.Log("FLAG CORRECT");
+            puzzle.CompletePuzzle();
+        }
+        else
+        {
+            Debug.Log("FLAG INCORRECT");
+            puzzle.FailPuzzle();
+        }
     }
 }

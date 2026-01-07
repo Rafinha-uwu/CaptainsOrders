@@ -189,6 +189,8 @@ public class CannonLogic : MonoBehaviour
 
     public void Fire()
     {
+        Puzzle puzzle = GetComponent<Puzzle>();
+
         // ----- FLAG MODE -----
         if (requiresFlag)
         {
@@ -200,11 +202,11 @@ public class CannonLogic : MonoBehaviour
 
             if (currentAim != expectedSingleShot)
             {
-                Debug.Log("WRONG FALLBACK SHOT");
+                Debug.Log("WRONG FALLBACK SHOT"); puzzle.FailPuzzle();
                 return;
             }
 
-            Debug.Log("CANNON PUZZLE SOLVED (FLAG)");
+            Debug.Log("CANNON PUZZLE SOLVED (FLAG)"); puzzle.CompletePuzzle();
             return;
         }
 
@@ -215,6 +217,7 @@ public class CannonLogic : MonoBehaviour
         if (currentAim != expectedSequence[shotIndex])
         {
             Debug.Log("WRONG SHOT");
+            puzzle.FailPuzzle();
             return;
         }
 
@@ -222,7 +225,7 @@ public class CannonLogic : MonoBehaviour
         Debug.Log("Correct shot");
 
         if (shotIndex == expectedSequence.Count)
-            Debug.Log("CANNON PUZZLE SOLVED");
+            Debug.Log("CANNON PUZZLE SOLVED"); puzzle.CompletePuzzle();
     }
 
     // ====================================================
@@ -231,9 +234,11 @@ public class CannonLogic : MonoBehaviour
 
     public void PeaceSignTriggered()
     {
+        Puzzle puzzle = GetComponent<Puzzle>();
+
         if (!requiresFlag)
         {
-            Debug.Log("FLAG NOT REQUIRED — PENALTY");
+            Debug.Log("FLAG NOT REQUIRED — PENALTY"); puzzle.FailPuzzle();
             return;
         }
 
