@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class ObjectMoverPhysics : MonoBehaviour
+public class ObjectMover : MonoBehaviour
 {
     public Transform helm;
     public float moveSpeed = 2f;
