@@ -4,24 +4,32 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation;
 
-public class SimulateTeleportPress : MonoBehaviour
+public class TeleportSimulator : MonoBehaviour
 {
     public XRInteractionManager interactionManager;
     public XRRayInteractor rayInteractor;
-    public BaseTeleportationInteractable teleportTarget;
+    public BaseTeleportationInteractable[] teleportTargets;
 
-    public void SimulateSelectPress()
+    public void SimulateSelectPressAll()
     {
-        if (interactionManager == null || rayInteractor == null || teleportTarget == null)
+        if (interactionManager == null || rayInteractor == null || teleportTargets == null)
             return;
 
         IXRSelectInteractor selectInteractor = rayInteractor as IXRSelectInteractor;
-        IXRSelectInteractable selectInteractable = teleportTarget as IXRSelectInteractable;
-
-        if (selectInteractor == null || selectInteractable == null)
+        if (selectInteractor == null)
             return;
 
-        interactionManager.SelectEnter(selectInteractor, selectInteractable);
-        interactionManager.SelectExit(selectInteractor, selectInteractable);
+        foreach (var teleportTarget in teleportTargets)
+        {
+            if (teleportTarget == null)
+                continue;
+
+            IXRSelectInteractable selectInteractable = teleportTarget as IXRSelectInteractable;
+            if (selectInteractable == null)
+                continue;
+
+            interactionManager.SelectEnter(selectInteractor, selectInteractable);
+            interactionManager.SelectExit(selectInteractor, selectInteractable);
+        }
     }
 }

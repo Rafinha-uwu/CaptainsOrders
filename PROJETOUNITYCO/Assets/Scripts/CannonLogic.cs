@@ -1,76 +1,120 @@
 using UnityEngine;
-using TMPro;
 using System.Collections.Generic;
-using System.Text;
 
 public class CannonLogic : MonoBehaviour
 {
-    // ===== ENUMS =====
+    // ================= ENUMS =================
 
-    public enum BowColor { Red, White, Blue }
-    public enum ShipPart { Deck, Stern, Bow, Mast }
-    public enum FlagColor { Blue, Red, Yellow, Black }
+    public enum ShipPart
+    {
+        Deck,   // 0
+        Stern,  // 1
+        Bow,    // 2
+        Mast    // 3
+    }
 
-    // ===== UI =====
+    public enum BowColor
+    {
+        Red,    // 0
+        White,  // 1
+        Blue    // 2
+    }
 
-    public TMP_Text otherShipText;
+    public enum FlagColor
+    {
+        Blue,   // 0
+        Red,    // 1
+        Yellow, // 2
+        Black   // 3
+    }
 
-    // ===== OTHER SHIP (RANDOMIZED) =====
+    // ================= VISUAL REFERENCES =================
 
-    private int masts;          // 2–4
-    private int cannons;        // 3–5
+    [Header("Other Ship - Masts (2–4)")]
+    public GameObject[] otherMastObjects; // size 4
+
+    [Header("Other Ship - Cannons Facing You (2–5)")]
+    public GameObject[] otherCannonObjects; // size 5
+
+    [Header("Other Ship - Bow (Material Based)")]
+    public Renderer bowRenderer;
+    public Material[] bowMaterials; // size 3 (Red, White, Blue)
+
+    [Header("Fallback Flag (Material Based)")]
+    public GameObject flagObject;
+    public Renderer flagRenderer;
+    public Material[] flagMaterials; // size 4 (Blue, Red, Yellow, Black)
+
+    // ================= OTHER SHIP DATA =================
+
+    private int mastCount;     // 2–4
+    private int cannonCount;   // 2–5
     private BowColor bowColor;
 
-    // ===== EXPECTED RESULT =====
+    // ================= SOLUTION =================
 
     private List<ShipPart> expectedSequence = new();
-    private bool requiresPeaceFallback;
+    private ShipPart expectedSingleShot;
+    private bool requiresFlag;
+    private bool hasRaisedFlag;
 
-    // ===== PLAYER INPUT =====
+    // ================= PLAYER STATE =================
 
-    private List<ShipPart> playerShots = new();
+    private ShipPart currentAim;
+    private int shotIndex;
 
     void Start()
     {
         RandomizeOtherShip();
-        ComputeFiringSolution();
+        ComputeSolution();
     }
 
-    // ===== RANDOMIZATION =====
+    // ====================================================
+    // RANDOMIZATION + VISUALS
+    // ====================================================
 
     void RandomizeOtherShip()
     {
-        masts = Random.Range(2, 5);
-        cannons = Random.Range(3, 6);
+        mastCount = Random.Range(2, 5);   // 2–4
+        cannonCount = Random.Range(2, 6); // 2–5
         bowColor = (BowColor)Random.Range(0, 3);
 
-        WriteOtherShipText();
+        ApplyVisuals();
     }
 
-    void WriteOtherShipText()
+    void ApplyVisuals()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"Masts: {masts}");
-        sb.AppendLine($"Cannons Facing You: {cannons}");
-        sb.AppendLine($"Bow Color: {bowColor}");
+        // Masts
+        for (int i = 0; i < otherMastObjects.Length; i++)
+            otherMastObjects[i].SetActive(i < mastCount);
 
-        if (otherShipText != null)
-            otherShipText.text = sb.ToString();
+        // Cannons
+        for (int i = 0; i < otherCannonObjects.Length; i++)
+            otherCannonObjects[i].SetActive(i < cannonCount);
 
-        Debug.Log(sb.ToString());
+        // Bow material
+        bowRenderer.material = bowMaterials[(int)bowColor];
+
+        // Flag hidden initially
+        flagObject.SetActive(false);
     }
 
-    // ===== RULE ENGINE =====
+    // ====================================================
+    // RULE ENGINE (A–E)
+    // ====================================================
 
-    void ComputeFiringSolution()
+    void ComputeSolution()
     {
         expectedSequence.Clear();
-        requiresPeaceFallback = false;
+        requiresFlag = false;
+        hasRaisedFlag = false;
+        shotIndex = 0;
 
         // Rule A
-        if (masts == 2 && bowColor == BowColor.Blue && cannons == 3)
+        if (mastCount == 2 && bowColor == BowColor.Blue && cannonCount == 3)
         {
-            expectedSequence.AddRange(new[] {
+            expectedSequence.AddRange(new[]
+            {
                 ShipPart.Mast,
                 ShipPart.Bow,
                 ShipPart.Deck
@@ -79,9 +123,10 @@ public class CannonLogic : MonoBehaviour
         }
 
         // Rule B
-        if (masts == 4 && cannons == 5)
+        if (mastCount == 4 && cannonCount == 5)
         {
-            expectedSequence.AddRange(new[] {
+            expectedSequence.AddRange(new[]
+            {
                 ShipPart.Deck,
                 ShipPart.Stern,
                 ShipPart.Bow
@@ -90,9 +135,10 @@ public class CannonLogic : MonoBehaviour
         }
 
         // Rule C
-        if (bowColor == BowColor.Red && masts == 3 && cannons == 4)
+        if (bowColor == BowColor.Red && mastCount == 3 && cannonCount == 4)
         {
-            expectedSequence.AddRange(new[] {
+            expectedSequence.AddRange(new[]
+            {
                 ShipPart.Bow,
                 ShipPart.Mast,
                 ShipPart.Stern
@@ -101,9 +147,10 @@ public class CannonLogic : MonoBehaviour
         }
 
         // Rule D
-        if (bowColor == BowColor.White && cannons == 3)
+        if (bowColor == BowColor.White && cannonCount == 3)
         {
-            expectedSequence.AddRange(new[] {
+            expectedSequence.AddRange(new[]
+            {
                 ShipPart.Deck,
                 ShipPart.Mast,
                 ShipPart.Bow
@@ -112,9 +159,10 @@ public class CannonLogic : MonoBehaviour
         }
 
         // Rule E
-        if (cannons == 4 && bowColor == BowColor.Blue)
+        if (cannonCount == 4 && bowColor == BowColor.Blue)
         {
-            expectedSequence.AddRange(new[] {
+            expectedSequence.AddRange(new[]
+            {
                 ShipPart.Stern,
                 ShipPart.Deck,
                 ShipPart.Mast
@@ -122,30 +170,82 @@ public class CannonLogic : MonoBehaviour
             return;
         }
 
-        // Fallback
-        requiresPeaceFallback = true;
+        // Final Condition
+        requiresFlag = true;
     }
 
-    // ===== PLAYER INPUT =====
+    // ====================================================
+    // PLAYER INPUT
+    // ====================================================
 
-    public void RegisterShot(int partIndex)
+    public void SetCannonDirection(int index)
     {
-        playerShots.Add((ShipPart)partIndex);
+        currentAim = (ShipPart)index;
     }
 
-    public void ResetShots()
+    // ====================================================
+    // FIRE (SEQUENCE OR FLAG)
+    // ====================================================
+
+    public void Fire()
     {
-        playerShots.Clear();
+        // ----- FLAG MODE -----
+        if (requiresFlag)
+        {
+            if (!hasRaisedFlag)
+            {
+                Debug.Log("Raise the flag first.");
+                return;
+            }
+
+            if (currentAim != expectedSingleShot)
+            {
+                Debug.Log("WRONG FALLBACK SHOT");
+                return;
+            }
+
+            Debug.Log("CANNON PUZZLE SOLVED (FLAG)");
+            return;
+        }
+
+        // ----- SEQUENCE MODE -----
+        if (shotIndex >= expectedSequence.Count)
+            return;
+
+        if (currentAim != expectedSequence[shotIndex])
+        {
+            Debug.Log("WRONG SHOT");
+            return;
+        }
+
+        shotIndex++;
+        Debug.Log("Correct shot");
+
+        if (shotIndex == expectedSequence.Count)
+            Debug.Log("CANNON PUZZLE SOLVED");
     }
 
-    // ===== PEACE SIGN FALLBACK =====
+    // ====================================================
+    // PEACE SIGN / FLAG
+    // ====================================================
 
-    public bool ResolvePeaceFallback(int flagColorIndex)
+    public void PeaceSignTriggered()
     {
-        if (!requiresPeaceFallback)
-            return false;
+        if (!requiresFlag)
+        {
+            Debug.Log("FLAG NOT REQUIRED — PENALTY");
+            return;
+        }
 
-        ShipPart expected = (FlagColor)flagColorIndex switch
+        if (hasRaisedFlag)
+            return;
+
+        hasRaisedFlag = true;
+
+        FlagColor flag = (FlagColor)Random.Range(0, 4);
+        ApplyFlag(flag);
+
+        expectedSingleShot = flag switch
         {
             FlagColor.Blue => ShipPart.Bow,
             FlagColor.Red => ShipPart.Stern,
@@ -153,41 +253,11 @@ public class CannonLogic : MonoBehaviour
             FlagColor.Black => ShipPart.Mast,
             _ => ShipPart.Deck
         };
-
-        bool correct = playerShots.Count == 1 && playerShots[0] == expected;
-        Debug.Log(correct ? "CANNON SOLVED" : "CANNON STRIKE");
-        return correct;
     }
 
-    // ===== NORMAL CONFIRM =====
-
-    public bool ConfirmSequence()
+    void ApplyFlag(FlagColor flag)
     {
-        if (requiresPeaceFallback)
-            return false;
-
-        if (playerShots.Count != expectedSequence.Count)
-            return false;
-
-        for (int i = 0; i < expectedSequence.Count; i++)
-        {
-            if (playerShots[i] != expectedSequence[i])
-                return false;
-        }
-
-        Debug.Log("CANNON SOLVED");
-        return true;
-    }
-
-    // ===== UNITY EVENT WRAPPERS =====
-
-    public void ConfirmSequence_UnityEvent()
-    {
-        ConfirmSequence();
-    }
-
-    public void ResolvePeaceFallback_UnityEvent(int flagColorIndex)
-    {
-        ResolvePeaceFallback(flagColorIndex);
+        flagObject.SetActive(true);
+        flagRenderer.material = flagMaterials[(int)flag];
     }
 }

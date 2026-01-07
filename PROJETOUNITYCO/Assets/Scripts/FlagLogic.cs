@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class FlagLogicV3 : MonoBehaviour
+public class FlagLogic : MonoBehaviour
 {
-    // ===== ENUMS =====
+    // ================= ENUMS =================
 
     public enum FlagColor
     {
@@ -28,38 +28,30 @@ public class FlagLogicV3 : MonoBehaviour
         BigRectangle  // 3
     }
 
-    // =========================================================
-    // OTHER SHIP VISUAL REFERENCES
-    // =========================================================
+    // ================= OTHER SHIP VISUALS =================
 
-    [Header("Other Ship - Colors (paired, match enum order)")]
+    [Header("Other Ship - Colors")]
     public GameObject[] otherColorObjects;   // size 4
 
-    [Header("Other Ship - Charges (match enum order)")]
+    [Header("Other Ship - Charges")]
     public GameObject[] otherChargeObjects;  // size 4
 
-    [Header("Other Ship - Flag Count (1,2,3)")]
-    public GameObject[] otherFlagCountObjects; // size 3
+    [Header("Other Ship - Masts (1–3)")]
+    public GameObject[] otherMastObjects;    // size 3
 
-    // =========================================================
-    // OTHER SHIP DATA
-    // =========================================================
+    // ================= OTHER SHIP DATA =================
 
     private FlagColor otherColor;
     private FlagCharge otherCharge;
-    private int otherCount;
+    private int otherMasts;
 
-    // =========================================================
-    // OUR FLAG (PLAYER INPUT)
-    // =========================================================
+    // ================= PLAYER INPUT =================
 
     private FlagColor ourColor;
     private FlagCharge ourCharge;
     private FlagShape ourShape;
 
-    // =========================================================
-    // EXPECTED RESULT (RULE OUTPUT)
-    // =========================================================
+    // ================= EXPECTED RESULT =================
 
     private FlagColor expectedColor;
     private FlagCharge expectedCharge;
@@ -68,52 +60,99 @@ public class FlagLogicV3 : MonoBehaviour
     void Start()
     {
         RandomizeOtherShip();
-        ComputeExpectedFlag(); // rules later
+        ComputeExpectedFlag();
     }
 
-    // =========================================================
-    // RANDOMIZATION + VISUALS
-    // =========================================================
+    // ====================================================
+    // RANDOMIZATION + VISUAL APPLICATION
+    // ====================================================
 
     public void RandomizeOtherShip()
     {
         otherColor = (FlagColor)Random.Range(0, 4);
         otherCharge = (FlagCharge)Random.Range(0, 4);
-        otherCount = Random.Range(1, 4);
+        otherMasts = Random.Range(1, 4);
 
         ApplyOtherShipVisuals();
     }
 
     void ApplyOtherShipVisuals()
     {
-        // Colors (paired)
         for (int i = 0; i < otherColorObjects.Length; i++)
             otherColorObjects[i].SetActive(i == (int)otherColor);
 
-        // Charges
         for (int i = 0; i < otherChargeObjects.Length; i++)
             otherChargeObjects[i].SetActive(i == (int)otherCharge);
 
-        // Flag count
-        for (int i = 0; i < otherFlagCountObjects.Length; i++)
-            otherFlagCountObjects[i].SetActive(i < otherCount);
+        for (int i = 0; i < otherMastObjects.Length; i++)
+            otherMastObjects[i].SetActive(i < otherMasts);
     }
 
-    // =========================================================
-    // RULE ENGINE (PLACEHOLDER)
-    // =========================================================
+    // ====================================================
+    // RULE ENGINE — THIS IS THE IMPORTANT PART
+    // ====================================================
 
     void ComputeExpectedFlag()
     {
-        // TEMP safe defaults
-        expectedColor = FlagColor.White;
-        expectedCharge = FlagCharge.Crest;
-        expectedShape = FlagShape.Square;
+        // ---------- Rule 1 ----------
+        if (otherColor == FlagColor.White)
+            expectedColor = FlagColor.Violet;
+        else if (otherColor == FlagColor.BlueRed)
+            expectedColor = FlagColor.White;
+        else
+            expectedColor = FlagColor.PurpleBlack;
+
+        // ---------- Rule 2 ----------
+        if (otherCharge == FlagCharge.FilledCross)
+            expectedColor = FlagColor.BlueRed;
+        else if (otherCharge == FlagCharge.HollowCross)
+            expectedColor = FlagColor.White;
+        // Crest / HorizontalLines -> no change
+
+        // ---------- Rule 3 ----------
+        if (otherMasts == 3)
+        {
+            expectedColor = InvertColor(expectedColor);
+        }
+
+        // ---------- Rule 4 ----------
+        if (otherMasts == 1)
+            expectedShape = FlagShape.Square;
+        else if (otherMasts == 2)
+            expectedShape = FlagShape.Rectangle;
+        else
+            expectedShape = FlagShape.BigRectangle;
+
+        // ---------- Rule 5 ----------
+        if (otherCharge == FlagCharge.HorizontalLines)
+            expectedShape = FlagShape.Triangle;
+
+        // ---------- Rule 6 ----------
+        if (otherMasts > 1)
+            expectedCharge = FlagCharge.FilledCross;
+        else if (otherCharge == FlagCharge.Crest)
+            expectedCharge = FlagCharge.HollowCross;
+        else
+            expectedCharge = FlagCharge.HorizontalLines;
+
+        Debug.Log($"EXPECTED → Color:{expectedColor}, Shape:{expectedShape}, Charge:{expectedCharge}");
     }
 
-    // =========================================================
-    // PLAYER INPUT
-    // =========================================================
+    FlagColor InvertColor(FlagColor c)
+    {
+        return c switch
+        {
+            FlagColor.White => FlagColor.Violet,
+            FlagColor.Violet => FlagColor.White,
+            FlagColor.BlueRed => FlagColor.PurpleBlack,
+            FlagColor.PurpleBlack => FlagColor.BlueRed,
+            _ => c
+        };
+    }
+
+    // ====================================================
+    // PLAYER INPUT (BUTTONS)
+    // ====================================================
 
     public void SetOurColor(int index)
     {
@@ -130,9 +169,9 @@ public class FlagLogicV3 : MonoBehaviour
         ourShape = (FlagShape)index;
     }
 
-    // =========================================================
-    // CONFIRMATION
-    // =========================================================
+    // ====================================================
+    // CONFIRMATION (PEACE SIGN)
+    // ====================================================
 
     bool ConfirmFlag_Internal()
     {
@@ -142,7 +181,7 @@ public class FlagLogicV3 : MonoBehaviour
             ourShape == expectedShape;
     }
 
-    // UnityEvent-safe wrapper
+    // UnityEvent-safe
     public void ConfirmFlag_UnityEvent()
     {
         bool correct = ConfirmFlag_Internal();
